@@ -30,7 +30,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="npm.deploy">
+  <component name="RunManager" selected="npm.start (1)">
     <configuration name="build" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/my-app/package.json" />
       <command value="run" />
@@ -41,11 +41,31 @@
       <envs />
       <method v="2" />
     </configuration>
+    <configuration name="deploy (1)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="deploy" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <configuration name="deploy" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/my-app/package.json" />
       <command value="run" />
       <scripts>
         <script value="deploy" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="start (1)" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
       </scripts>
       <node-interpreter value="project" />
       <envs />
@@ -63,6 +83,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.start (1)" />
+        <item itemvalue="npm.deploy (1)" />
         <item itemvalue="npm.deploy" />
         <item itemvalue="npm.build" />
         <item itemvalue="npm.start" />
@@ -77,7 +99,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1674764652157</updated>
-      <workItem from="1674764653476" duration="2042000" />
+      <workItem from="1674764653476" duration="8275000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <created>1674766395426</created>
