@@ -1,36 +1,26 @@
-import axios from "axios"
 import React, { useEffect, useState } from "react"
 import "./App.css"
+import { ConnectToSpotifyLink } from "./spotify/auth/ConnectToSpotifyLink"
+import { createSpotifyClient } from "./api/createSpotifyClient"
+import { createSpotifyAdapter } from "./spotify/createSpotifyAdapter"
+import { Playlist } from "./spotify/Playlist"
 
 function App() {
-  const clientId = "8d7301f2986c40cd917eda9af9135fcf" // Your client id
-  const redirectUri = window.location.href // Your redirect uri;
-  const scope = "user-read-private user-read-email"
-  const url = "https://accounts.spotify.com/authorize"
-  const fullUrl = `${url}?response_type=token&client_id=${encodeURIComponent(
-    clientId
-  )}&scope=${encodeURIComponent(scope)}&redirect_uri=${encodeURIComponent(redirectUri)}`
-
   const matches = window.location.hash.substring(1).match(/access_token=(.*)&token_type/)
-  const token = (matches?.length ?? 0) > 1 ? matches![1] : undefined
-
-  const [playlists, setPlaylists] = useState<{ name: string }[]>([])
+  const token = (matches?.length ?? 0) > 1 ? matches![1] : ""
+  const spotifyClient = createSpotifyClient(token)
+  const spotifyAdapter = createSpotifyAdapter(spotifyClient)
+  const [playlists, setPlaylists] = useState<Playlist[]>([])
 
   useEffect(() => {
     if (!!token) {
-      axios
-        .get("https://api.spotify.com/v1/me/playlists", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => setPlaylists(res.data.items))
+      spotifyAdapter.getUserPlaylists().then((playlists) => setPlaylists(playlists))
     }
   }, [token])
 
   return (
     <div className="App">
-      Welcome <a href={fullUrl}>Connect to Spotify</a>
+      Welcome <ConnectToSpotifyLink />
       <br />
       <br />
       {!!playlists.length && (
