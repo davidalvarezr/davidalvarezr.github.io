@@ -1,4 +1,6 @@
 export type Playlist = {
+  id: string
   name: string
-  // todo...
+  nbOfTracks: number
+  owner: string
 }

@@ -1,3 +1,4 @@
-export type GetUserPlaylistsResponse = {
-  items: { name: string }[]
-}
+import { PagingObject } from "./PagingObject"
+import { SpotifyPlaylist } from "./SpotifyPlaylist"
+
+export type GetUserPlaylistsResponse = PagingObject<SpotifyPlaylist>

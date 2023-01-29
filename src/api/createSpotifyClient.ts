@@ -3,25 +3,37 @@ import { useRef } from "react"
 import { GetUserPlaylistsResponse } from "./GetUserPlaylistsResponse"
 
 export const createSpotifyClient = (accessToken: string) => {
-  const token = useRef(accessToken)
-
-  const api = axios.create({
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  const api = useRef(
+    axios.create({
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      baseURL: "https://api.spotify.com/v1",
+    })
+  )
 
   const setToken = (accessToken: string) => {
-    token.current = accessToken
+    api.current = axios.create({
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      baseURL: "https://api.spotify.com/v1",
+    })
   }
 
   const getUserPlaylists = async (): Promise<GetUserPlaylistsResponse> => {
-    const res = await api.get<GetUserPlaylistsResponse>("https://api.spotify.com/v1/me/playlists")
+    const res = await api.current.get<GetUserPlaylistsResponse>("/me/playlists")
+    return res.data
+  }
+
+  const getPlaylist = async (id: string): Promise<any> => {
+    const res = await api.current.get(`/playlists/${id}`)
     return res.data
   }
 
   return {
     setToken,
     getUserPlaylists,
+    getPlaylist,
   }
 }
