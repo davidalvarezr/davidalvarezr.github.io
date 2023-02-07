@@ -1,13 +1,5 @@
-type Owner = {
-  display_name: string
-  external_urls: {
-    spotify: string
-  }
-  href: string
-  id: string
-  type: string
-  uri: string
-}
+import { SpotifyOwner } from "./SpotifyOwner"
+import { SpotifyImage } from "./SpotifyImage"
 
 export type SpotifyPlaylist = {
   collaborative: boolean
@@ -17,13 +9,9 @@ export type SpotifyPlaylist = {
   }
   href: string
   id: string
-  images: {
-    height: number
-    url: string
-    width: number
-  }[]
+  images: SpotifyImage[]
   name: string
-  owner: Owner
+  owner: SpotifyOwner
   primary_color: unknown
   public: boolean
   snapshot_id: string

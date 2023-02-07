@@ -1,5 +1,6 @@
 import { createSpotifyClient } from "../api/createSpotifyClient"
 import { Playlist } from "./Playlist"
+import { Track } from "./Track"
 
 export const createSpotifyAdapter = (spotifyClient: ReturnType<typeof createSpotifyClient>) => {
   const getUserPlaylists = async (): Promise<Playlist[]> => {
@@ -12,7 +13,16 @@ export const createSpotifyAdapter = (spotifyClient: ReturnType<typeof createSpot
     }))
   }
 
+  const getPlaylist = async (id: string): Promise<Track[]> => {
+    const data = await spotifyClient.getPlaylist(id)
+    return data.tracks.items.map((track) => ({
+      id: track.track.id,
+      name: track.track.name,
+    }))
+  }
+
   return {
     getUserPlaylists,
+    getPlaylist,
   }
 }

@@ -1,6 +1,7 @@
 import axios from "axios"
 import { useRef } from "react"
 import { GetUserPlaylistsResponse } from "./GetUserPlaylistsResponse"
+import { GetPlaylistResponse } from "./GetPlaylistResponse"
 
 export const createSpotifyClient = (accessToken: string) => {
   const api = useRef(
@@ -26,8 +27,8 @@ export const createSpotifyClient = (accessToken: string) => {
     return res.data
   }
 
-  const getPlaylist = async (id: string): Promise<any> => {
-    const res = await api.current.get(`/playlists/${id}`)
+  const getPlaylist = async (id: string): Promise<GetPlaylistResponse> => {
+    const res = await api.current.get<GetPlaylistResponse>(`/playlists/${id}`)
     return res.data
   }
 
