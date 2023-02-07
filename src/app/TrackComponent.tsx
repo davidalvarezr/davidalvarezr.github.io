@@ -1,16 +1,15 @@
-import React, { useRef, useState } from "react"
+import React, { useRef } from "react"
 
-export type TrackProps = {
+export type TrackComponentProps = {
   index: number
   id: string
   name: string
 }
 
-export const TrackElement = (props: TrackProps) => {
+export const TrackComponent = (props: TrackComponentProps) => {
   const { index, id, name } = props
 
   const ref = useRef<HTMLDivElement>(null)
-  const [isHold, setIsHold] = useState(false)
 
   return (
     <div
@@ -21,11 +20,9 @@ export const TrackElement = (props: TrackProps) => {
         userSelect: "none",
         width: "200px",
         backgroundColor: "white",
-        opacity: isHold ? 0.5 : 1,
+        opacity: 1,
       }}
       key={id}
-      onMouseDown={() => setIsHold(true)}
-      onMouseUp={() => setIsHold(false)}
     >
       {index + 1}. {name}
     </div>

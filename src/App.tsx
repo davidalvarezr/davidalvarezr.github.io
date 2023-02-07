@@ -1,25 +1,26 @@
 import React, { MouseEvent, useEffect, useRef, useState } from "react"
 import "./App.css"
 import { ConnectToSpotifyLink } from "./spotify/auth/ConnectToSpotifyLink"
-import { createSpotifyClient } from "./api/createSpotifyClient"
-import { createSpotifyAdapter } from "./app/createSpotifyAdapter"
 import { Playlist } from "./app/Playlist"
-import { Track } from "./app/Track"
-import { TrackElement } from "./app/TrackElement"
+import { Playlists } from "./app/Playlists"
+import { useSpotifyClient } from "./app/SpotifyClientContext"
+import { useSpotifyAdapter } from "./app/SpotifyAdapterContext"
+import { getTrackElement } from "./app/movement/getTrackElement"
+import { highlightBorderAccordingToMousePosition } from "./app/movement/highlightBorderAccordingToMousePosition"
+import { getTrackElementBelowTrack } from "./app/movement/getTrackElementBelowTrack"
 
 function App() {
-  const matches = window.location.hash.substring(1).match(/access_token=(.*)&token_type/)
-  const token = matches && matches[1] ? matches[1] : ""
-  const spotifyClient = createSpotifyClient(token)
-  const spotifyAdapter = createSpotifyAdapter(spotifyClient)
+  const spotifyClient = useSpotifyClient()
+  const spotifyAdapter = useSpotifyAdapter()
   const [playlists, setPlaylists] = useState<Playlist[]>([])
-  const [tracks, setTracks] = useState<Record<string, Track[]>>({})
 
   const ref = useRef<HTMLDivElement>(null)
   const elementBeingMoved = useRef<HTMLDivElement>()
   const lastMousePosition = useRef({ x: 0, y: 0 })
   const targetElement = useRef<HTMLDivElement>()
 
+  const matches = window.location.hash.substring(1).match(/access_token=(.*)&token_type/)
+  const token = matches && matches[1] ? matches[1] : ""
   useEffect(() => {
     if (token) {
       spotifyClient.setToken(token)
@@ -27,38 +28,15 @@ function App() {
     }
   }, [token])
 
-  const getPlaylist = (playlistId: string) => {
-    spotifyAdapter.getPlaylist(playlistId).then((tracksLocal) => {
-      setTracks({
-        ...tracks,
-        [playlistId]: tracksLocal,
-      })
-    })
-  }
-
-  const totalOffset = (
-    offsets: { offsetX: number; offsetY: number },
-    element: HTMLElement
-  ): { offsetX: number; offsetY: number } => {
-    if (element === ref.current) return offsets
-
-    return totalOffset(
-      {
-        offsetX: offsets.offsetX + element.offsetLeft,
-        offsetY: offsets.offsetY + element.offsetTop,
-      },
-      element.parentElement!
-    )
-  }
-
   const onMouseDown = (e: MouseEvent<HTMLDivElement>) => {
     lastMousePosition.current = { x: e.clientX, y: e.clientY }
-    elementBeingMoved.current =
-      (e.target as Element).className === "track-element" ? (e.target as HTMLDivElement) : undefined
+    elementBeingMoved.current = getTrackElement(e.target)
+    if (elementBeingMoved.current) {
+      elementBeingMoved.current.style.opacity = "0.5"
+    }
   }
 
   const onMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    const rects = ref.current!.getBoundingClientRect()
     if (!elementBeingMoved.current) return
 
     // Move behaviour
@@ -79,39 +57,37 @@ function App() {
 
     // Border highlight behavior
 
-    const elementBehindHoldElement = document.elementsFromPoint(e.clientX, e.clientY)[1]
-    const trackBehindHoldElement =
-      elementBehindHoldElement.className === "track-element"
-        ? (elementBehindHoldElement as HTMLDivElement)
-        : undefined
+    const elementsAtMousePosition = document.elementsFromPoint(e.clientX, e.clientY)
+    const trackBehindHoldElement = getTrackElementBelowTrack(
+      elementsAtMousePosition,
+      elementBeingMoved.current
+    )
     if (targetElement.current) {
       targetElement.current.style.borderTop = "none"
       targetElement.current.style.borderBottom = "none"
     }
+
     targetElement.current = trackBehindHoldElement
 
     if (!targetElement.current) {
       return
     }
 
-    const deltaTop = e.clientY - (targetElement.current?.offsetTop + rects.top)
-    const deltaBottom =
-      targetElement.current?.offsetTop + targetElement.current?.offsetHeight + rects.top - e.clientY
-
-    console.log(deltaTop, deltaBottom)
-
-    if (deltaTop < deltaBottom) {
-      targetElement.current.style.borderTop = "solid 2px orange"
-    } else {
-      targetElement.current.style.borderBottom = "solid 2px orange"
-    }
+    highlightBorderAccordingToMousePosition(ref.current!, e.clientY, targetElement.current)
   }
 
   const onMouseUp = (e: MouseEvent<HTMLDivElement>) => {
-    const elementBehindHoldElement = document.elementsFromPoint(e.clientX, e.clientY)[1]
-    if (elementBehindHoldElement.className === "track-element") {
-      const elt = elementBehindHoldElement as HTMLDivElement
-      elt.style.borderBottom = "none"
+    if (!elementBeingMoved.current) return
+
+    elementBeingMoved.current.style.opacity = "1"
+    const elementsAtMousePosition = document.elementsFromPoint(e.clientX, e.clientY)
+    const trackBehindHoldElement = getTrackElementBelowTrack(
+      elementsAtMousePosition,
+      elementBeingMoved.current
+    )
+    if (trackBehindHoldElement) {
+      trackBehindHoldElement.style.borderTop = "none"
+      trackBehindHoldElement.style.borderBottom = "none"
     }
     elementBeingMoved.current!.style.position = "inherit"
     elementBeingMoved.current = undefined
@@ -125,28 +101,13 @@ function App() {
       ref={ref}
       className="App"
     >
-      Welcome <ConnectToSpotifyLink />
-      <br />
-      <br />
+      <div style={{ marginBottom: "16px" }}>
+        Welcome <ConnectToSpotifyLink />
+      </div>
       {!!playlists.length && (
         <>
-          Your playlists:
-          <br />
-          <br />
-          <ul style={{ textAlign: "left", margin: "auto", width: "200px" }}>
-            {playlists.map((playlist) => (
-              <li key={playlist.name}>
-                <button onClick={() => getPlaylist(playlist.id)}>{playlist.name}</button>
-                {tracks[playlist.id]?.length && (
-                  <div>
-                    {tracks[playlist.id].map((track, index) => (
-                      <TrackElement index={index} key={track.id} id={track.id} name={track.name} />
-                    ))}
-                  </div>
-                )}
-              </li>
-            ))}
-          </ul>
+          <div style={{ marginBottom: "16px" }}>Your playlists:</div>
+          <Playlists playlists={playlists} />
         </>
       )}
     </div>
