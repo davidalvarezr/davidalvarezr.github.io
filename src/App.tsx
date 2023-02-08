@@ -1,4 +1,4 @@
-import React, { MouseEvent, useEffect, useRef, useState } from "react"
+import React, { MouseEvent, MutableRefObject, useEffect, useRef, useState } from "react"
 import "./App.css"
 import { ConnectToSpotifyLink } from "./spotify/auth/ConnectToSpotifyLink"
 import { Playlist } from "./app/Playlist"
@@ -36,11 +36,12 @@ function App() {
     }
   }
 
-  const onMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (!elementBeingMoved.current) return
+  let interval: NodeJS.Timer
 
-    // Move behaviour
-
+  const moveElement = (
+    e: MouseEvent<HTMLDivElement>,
+    elementBeingMoved: MutableRefObject<HTMLDivElement>
+  ) => {
     const offsets = {
       offsetLeft: elementBeingMoved.current!.offsetLeft,
       offsetTop: elementBeingMoved.current!.offsetTop,
@@ -68,16 +69,49 @@ function App() {
     }
 
     targetElement.current = trackBehindHoldElement
+  }
 
+  const onMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!elementBeingMoved.current) return
+
+    const deltaMouseTop = e.clientY
+    const deltaMouseBottom = window.innerHeight - e.clientY
+
+    console.log("window.scrollY", window.scrollY)
+
+    if (interval) {
+      clearInterval(interval)
+    }
+    if (window.scrollY > 0 && deltaMouseTop < 30) {
+      interval = setInterval(() => {
+        window.scrollBy(0, -1)
+        elementBeingMoved.current!.style.top = elementBeingMoved.current!.offsetTop - 1 + "px"
+        if (!targetElement.current) {
+          return
+        }
+
+        if (window.scrollY === 0) {
+          console.log("CLLEEEEEEEAAAAAAAAAAAARRRR")
+          clearInterval(interval)
+        }
+      }, 5)
+    }
+
+    // Move behaviour
+
+    moveElement(e, elementBeingMoved as MutableRefObject<HTMLDivElement>)
     if (!targetElement.current) {
       return
     }
-
     highlightBorderAccordingToMousePosition(ref.current!, e.clientY, targetElement.current)
   }
 
   const onMouseUp = (e: MouseEvent<HTMLDivElement>) => {
     if (!elementBeingMoved.current) return
+
+    if (interval) {
+      clearInterval(interval)
+    }
 
     elementBeingMoved.current.style.opacity = "1"
     const elementsAtMousePosition = document.elementsFromPoint(e.clientX, e.clientY)
