@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react"
+import { useSpotifyAdapter } from "../SpotifyAdapterContext"
+import { Track } from "../track/Track"
 import { Playlist } from "./Playlist"
-import { Track } from "./Track"
-import { useSpotifyAdapter } from "./SpotifyAdapterContext"
 import { PlaylistComponent } from "./PlaylistComponent"
 
 type PlaylistsProps = {
@@ -25,6 +25,10 @@ export const Playlists = (props: PlaylistsProps) => {
     [spotifyAdapter, tracks]
   )
 
+  const reversePlaylist = (playlistId: string) => {
+    spotifyAdapter.reversePlaylist(playlistId)
+  }
+
   return (
     <ul style={{ textAlign: "left", margin: "auto", width: "200px" }}>
       {playlists.map((playlist) => (
@@ -34,6 +38,7 @@ export const Playlists = (props: PlaylistsProps) => {
           name={playlist.name}
           tracks={tracks[playlist.id] ?? []}
           onClickPlaylist={getPlaylist}
+          onClickReverse={reversePlaylist}
         />
       ))}
     </ul>
