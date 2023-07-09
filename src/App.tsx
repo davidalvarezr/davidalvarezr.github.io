@@ -1,13 +1,13 @@
 import React, { MouseEvent, MutableRefObject, useEffect, useRef, useState } from "react"
 import "./App.css"
-import { ConnectToSpotifyLink } from "./spotify/auth/ConnectToSpotifyLink"
-import { Playlist } from "./app/Playlist"
-import { Playlists } from "./app/Playlists"
-import { useSpotifyClient } from "./app/SpotifyClientContext"
-import { useSpotifyAdapter } from "./app/SpotifyAdapterContext"
 import { getTrackElement } from "./app/movement/getTrackElement"
-import { highlightBorderAccordingToMousePosition } from "./app/movement/highlightBorderAccordingToMousePosition"
 import { getTrackElementBelowTrack } from "./app/movement/getTrackElementBelowTrack"
+import { highlightBorderAccordingToMousePosition } from "./app/movement/highlightBorderAccordingToMousePosition"
+import { Playlist } from "./app/playlist/Playlist"
+import { Playlists } from "./app/playlist/Playlists"
+import { useSpotifyAdapter } from "./app/SpotifyAdapterContext"
+import { useSpotifyClient } from "./app/SpotifyClientContext"
+import { ConnectToSpotifyLink } from "./spotify/auth/ConnectToSpotifyLink"
 
 function App() {
   const spotifyClient = useSpotifyClient()

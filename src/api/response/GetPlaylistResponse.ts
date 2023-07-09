@@ -1,6 +1,6 @@
-import { SpotifyOwner } from "./SpotifyOwner"
-import { SpotifyImage } from "./SpotifyImage"
-import { PagingObject } from "./PagingObject"
+import { PagingObject } from "../PagingObject"
+import { SpotifyImage } from "../SpotifyImage"
+import { SpotifyOwner } from "../SpotifyOwner"
 
 export type AddedBy = {
   external_urls: {
