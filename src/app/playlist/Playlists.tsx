@@ -29,6 +29,14 @@ export const Playlists = (props: PlaylistsProps) => {
     return await spotifyAdapter.createNewPlaylistAndSortByMostRecent(playlistId)
   }
 
+  const deletePlaylist = async (playlistId: string): Promise<void> => {
+    const playlist = playlists.find((p) => p.id === playlistId)
+
+    if (confirm(`Are you sure you want to delete playlist "${playlist?.name}"`)) {
+      return await spotifyAdapter.deletePlaylist(playlistId)
+    }
+  }
+
   return (
     <ul style={{ textAlign: "left", margin: "auto", width: "200px" }}>
       {playlists.map((playlist) => (
@@ -39,7 +47,7 @@ export const Playlists = (props: PlaylistsProps) => {
           tracks={tracks[playlist.id] ?? []}
           onClickPlaylist={getPlaylist}
           onClickReverse={reversePlaylist}
-          onClickDelete={() => undefined}
+          onClickDelete={deletePlaylist}
         />
       ))}
     </ul>
