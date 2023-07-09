@@ -8,15 +8,17 @@ type PlaylistComponentProps = {
   tracks: Track[]
   onClickPlaylist: (playlistId: string) => void
   onClickReverse: (playlistId: string) => void
+  onClickDelete: (playlistId: string) => void
 }
 export const PlaylistComponent = memo((props: PlaylistComponentProps) => {
-  const { id, name, tracks, onClickPlaylist, onClickReverse } = props
+  const { id, name, tracks, onClickPlaylist, onClickReverse, onClickDelete } = props
 
   return (
     <li>
       <div style={{ display: "flex" }}>
         <button onClick={() => onClickPlaylist(id)}>{name}</button>
         <button onClick={() => onClickReverse(id)}>reverse</button>
+        <button onClick={() => onClickDelete(id)}>delete</button>
       </div>
       <div>
         {tracks.map((track, index) => (

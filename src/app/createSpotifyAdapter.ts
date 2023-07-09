@@ -1,10 +1,13 @@
 import { createSpotifyClient } from "../api/createSpotifyClient"
 import { TrackItem } from "../api/response/GetPlaylistResponse"
+import { IMusicServiceAdapter } from "./IMusicServiceAdapter"
 import { Playlist } from "./playlist/Playlist"
 import { Track } from "./track/Track"
 
-export const createSpotifyAdapter = (spotifyClient: ReturnType<typeof createSpotifyClient>) => {
-  const getUserPlaylists = async (): Promise<Playlist[]> => {
+export const createSpotifyAdapter = (
+  spotifyClient: ReturnType<typeof createSpotifyClient>
+): IMusicServiceAdapter => ({
+  getUserPlaylists: async (): Promise<Playlist[]> => {
     const data = await spotifyClient.getUserPlaylists()
     return data.items.map((playlist) => ({
       id: playlist.id,
@@ -12,17 +15,17 @@ export const createSpotifyAdapter = (spotifyClient: ReturnType<typeof createSpot
       nbOfTracks: playlist.tracks.total,
       owner: playlist.owner.display_name,
     }))
-  }
+  },
 
-  const getPlaylist = async (id: string): Promise<Track[]> => {
-    const data = await spotifyClient.getPlaylist(id)
+  getPlaylist: async (playlistId: string): Promise<Track[]> => {
+    const data = await spotifyClient.getPlaylist(playlistId)
     return data.tracks.items.map((track) => ({
       id: track.track.id,
       name: track.track.name,
     }))
-  }
+  },
 
-  const reversePlaylist = async (playlistId: string): Promise<void> => {
+  createNewPlaylistAndSortByMostRecent: async (playlistSourceId: string): Promise<void> => {
     const limit = 100
     let offset = 0
     let total = 0
@@ -31,10 +34,10 @@ export const createSpotifyAdapter = (spotifyClient: ReturnType<typeof createSpot
 
     const me = await spotifyClient.getCurrentUserProfile()
 
-    const playlist = await spotifyClient.getPlaylist(playlistId)
+    const playlist = await spotifyClient.getPlaylist(playlistSourceId)
 
     do {
-      playlistItemsResponse = await spotifyClient.getPlaylistItems(playlistId, offset, limit)
+      playlistItemsResponse = await spotifyClient.getPlaylistItems(playlistSourceId, offset, limit)
       offset += playlistItemsResponse.items.length
       total = playlistItemsResponse.total
       tracks = [...tracks, ...playlistItemsResponse.items]
@@ -60,11 +63,9 @@ export const createSpotifyAdapter = (spotifyClient: ReturnType<typeof createSpot
         uris: chunk.map((track) => track.track.uri),
       })
     }
-  }
+  },
 
-  return {
-    getUserPlaylists,
-    getPlaylist,
-    reversePlaylist,
-  }
-}
+  deletePlaylist(playlistId: string): Promise<void> {
+    return spotifyClient.unfollowPlaylist(playlistId)
+  },
+})

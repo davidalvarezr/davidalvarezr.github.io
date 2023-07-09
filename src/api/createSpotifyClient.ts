@@ -56,6 +56,15 @@ export const createSpotifyClient = () => {
     return res.data
   }
 
+  const unfollowPlaylist = async (playlistId: string): Promise<void> => {
+    const res = await api.delete<void>(`/playlists/{playlist_id}/followers`, {
+      data: {
+        playlist_id: playlistId,
+      },
+    })
+    return res.data
+  }
+
   return {
     setToken,
     getUserPlaylists,
@@ -64,5 +73,6 @@ export const createSpotifyClient = () => {
     getCurrentUserProfile,
     createPlaylist,
     addItemsToPlaylist,
+    unfollowPlaylist,
   }
 }

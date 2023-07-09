@@ -25,8 +25,8 @@ export const Playlists = (props: PlaylistsProps) => {
     [spotifyAdapter, tracks]
   )
 
-  const reversePlaylist = (playlistId: string) => {
-    spotifyAdapter.reversePlaylist(playlistId)
+  const reversePlaylist = async (playlistId: string): Promise<void> => {
+    return await spotifyAdapter.createNewPlaylistAndSortByMostRecent(playlistId)
   }
 
   return (
@@ -39,6 +39,7 @@ export const Playlists = (props: PlaylistsProps) => {
           tracks={tracks[playlist.id] ?? []}
           onClickPlaylist={getPlaylist}
           onClickReverse={reversePlaylist}
+          onClickDelete={() => undefined}
         />
       ))}
     </ul>
