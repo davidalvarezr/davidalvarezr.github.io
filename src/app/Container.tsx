@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react"
-import { createSpotifyAdapter } from "./createSpotifyAdapter"
 import { createSpotifyClient } from "../api/createSpotifyClient"
+import { createSpotifyAdapter } from "./createSpotifyAdapter"
 import { SpotifyAdapterProvider } from "./SpotifyAdapterContext"
 import { SpotifyClientProvider } from "./SpotifyClientContext"
 

@@ -1,5 +1,5 @@
-import { SpotifyOwner } from "./SpotifyOwner"
 import { SpotifyImage } from "./SpotifyImage"
+import { SpotifyOwner } from "./SpotifyOwner"
 
 export type SpotifyPlaylist = {
   collaborative: boolean
