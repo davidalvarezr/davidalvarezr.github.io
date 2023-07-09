@@ -1,6 +1,6 @@
-import { createSpotifyAdapter } from "./createSpotifyAdapter"
-import { createSpotifyClient } from "../api/createSpotifyClient"
 import { createContext, useContext } from "react"
+import { createSpotifyClient } from "../api/createSpotifyClient"
+import { createSpotifyAdapter } from "./createSpotifyAdapter"
 
 const spotifyAdapter = createSpotifyAdapter(createSpotifyClient())
 
